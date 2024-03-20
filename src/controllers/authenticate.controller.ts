@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  HttpCode,
   Post,
   UnauthorizedException,
   UsePipes,
@@ -26,7 +27,7 @@ export class AuthenticateController {
   ) {}
 
   @Post()
-  // @HttpCode(201)
+  @HttpCode(200)
   @UsePipes(new ZodValidationPipe(AuthenticateBodySchema))
   async handle(@Body() body: AuthenticateBodySchema) {
     const { email, password } = body
@@ -36,7 +37,6 @@ export class AuthenticateController {
         email,
       },
     })
-    console.log('user :', user)
 
     if (!user) {
       throw new UnauthorizedException('User credentials do not match.')
