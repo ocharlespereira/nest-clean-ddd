@@ -20,7 +20,7 @@ model User {
   role     UserRole @default(STUDENT)
 
   questions Question[]
-  Answers   Answer[]
+  answers   Answer[]
 
   @@map("users")
 }
@@ -53,7 +53,7 @@ model Answer {
 
   author       User      @relation(fields: [authorId], references: [id])
   bestAnswerOn Question? @relation("bestAnswer")
-  Question     Question? @relation(fields: [questionId], references: [id])
+  question     Question? @relation(fields: [questionId], references: [id])
 
   @@map("answers")
 }
