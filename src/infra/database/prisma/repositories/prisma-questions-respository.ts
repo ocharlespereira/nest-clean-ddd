@@ -2,6 +2,7 @@ import { PaginationParams } from '@/core/repositories/pagination-params'
 import { QuestionsRepository } from '@/domain/forum/application/repositories/question-respository'
 import { Question } from '@/domain/forum/enterprise/entities/question'
 import { Injectable } from '@nestjs/common'
+import { PrismaQuestionMapper } from '../mappers/prisma-question-mapper'
 import { PrismaService } from '../prisma.service'
 
 @Injectable()
@@ -13,7 +14,11 @@ export class PrismaQuestionsRespository implements QuestionsRepository {
       where: { id },
     })
 
-    return { question }
+    if (!question) {
+      return null
+    }
+
+    return PrismaQuestionMapper.toDomain(question)
   }
 
   findBySlug(slug: string): Promise<Question | null> {
