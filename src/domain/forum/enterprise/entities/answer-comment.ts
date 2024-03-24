@@ -1,18 +1,22 @@
-import { Entity } from "@/core/entities/entity"
-import { UniqueEntityID } from "@/core/entities/unique-entity-id"
-import { Optional } from "@/core/types/option"
+import { Entity } from '@/core/entities/entity'
+import { UniqueEntityID } from '@/core/entities/unique-entity-id'
+import { Optional } from '@/core/types/option'
 
 export interface AnswerCommentProps {
   authorId: UniqueEntityID
   answerId: UniqueEntityID
   content: string
   createdAt: Date
-  updatedAt?: Date
+  updatedAt?: Date | null
 }
 
 export class AnswerComment extends Entity<AnswerCommentProps> {
   get authorId() {
     return this.props.authorId
+  }
+
+  get answerId() {
+    return this.props.answerId
   }
 
   get content() {
@@ -37,15 +41,15 @@ export class AnswerComment extends Entity<AnswerCommentProps> {
   }
 
   static create(
-    props: Optional<AnswerCommentProps, "createdAt">,
-    id?: UniqueEntityID
+    props: Optional<AnswerCommentProps, 'createdAt'>,
+    id?: UniqueEntityID,
   ) {
     const answerComment = new AnswerComment(
       {
         ...props,
         createdAt: props.createdAt ?? new Date(),
       },
-      id
+      id,
     )
 
     return answerComment

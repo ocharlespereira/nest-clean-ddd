@@ -57,7 +57,7 @@ model Answer {
   author       User         @relation(fields: [authorId], references: [id])
   bestAnswerOn Question?    @relation("bestAnswer")
   question     Question?    @relation(fields: [questionId], references: [id])
-  commnets     Comment[]
+  comments     Comment[]
   attachments  Attachment[]
 
   @@map("answers")
