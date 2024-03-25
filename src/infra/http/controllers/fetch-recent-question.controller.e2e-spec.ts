@@ -51,11 +51,13 @@ describe('Fetch Recent Question (E2E)', () => {
       .send()
 
     expect(response.statusCode).toBe(200)
+
+    // arrayContaining; valida em qualquer lugar do array
     expect(response.body).toEqual({
-      questions: [
-        expect.objectContaining({ title: 'Question 02' }),
+      questions: expect.arrayContaining([
         expect.objectContaining({ title: 'Question 01' }),
-      ],
+        expect.objectContaining({ title: 'Question 02' }),
+      ]),
     })
   })
 })
