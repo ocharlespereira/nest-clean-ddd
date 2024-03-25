@@ -3,6 +3,7 @@ import { AnswerNotFoundError } from '@/core/errors/errors/answer-not-found-error
 import { NotAllowedError } from '@/core/errors/errors/not-allowed-error'
 import { QuestionNotFoundError } from '@/core/errors/errors/question-not-found-error'
 import { AnswersRepository } from '@/domain/forum/application/repositories/answers-respository'
+import { Injectable } from '@nestjs/common'
 import { Question } from '../../enterprise/entities/question'
 import { QuestionsRepository } from '../repositories/question-respository'
 interface ChooseQuestionBestAnswerUseCaseRequest {
@@ -17,10 +18,11 @@ type ChooseQuestionBestAnswerUseCaseResponse = Either<
   }
 >
 
+@Injectable()
 export class ChooseQuestionBestAnswerUseCase {
   constructor(
     private questionRepository: QuestionsRepository,
-    private answersrepository: AnswersRepository
+    private answersrepository: AnswersRepository,
   ) {}
 
   async execute({
@@ -33,7 +35,7 @@ export class ChooseQuestionBestAnswerUseCase {
       return left(new AnswerNotFoundError())
     }
     const question = await this.questionRepository.findById(
-      answer.questionId.toString()
+      answer.questionId.toString(),
     )
 
     if (!question) {
