@@ -4,23 +4,23 @@ import { makeAnswer } from 'test/factories/make-answer'
 import { makeAnswerAttachment } from 'test/factories/make-answer-attachment'
 import { InMemoryAnswerAttachmentsRepository } from 'test/repositories/in-memory-answer-attachments-repository'
 import { InMemoryAnswerRepository } from 'test/repositories/in-memory-answers-respository'
-import { EditAnswerseCase } from './edit-answer'
+import { EditAnswerUseCase } from './edit-answer'
 
 let inMemoryAnswerRepository: InMemoryAnswerRepository
 let inMemoryAnswerAttachmentsRepository: InMemoryAnswerAttachmentsRepository
-let sut: EditAnswerseCase
+let sut: EditAnswerUseCase
 
 describe('Edit Answer', () => {
   beforeEach(() => {
     inMemoryAnswerAttachmentsRepository =
       new InMemoryAnswerAttachmentsRepository()
     inMemoryAnswerRepository = new InMemoryAnswerRepository(
-      inMemoryAnswerAttachmentsRepository
+      inMemoryAnswerAttachmentsRepository,
     )
 
-    sut = new EditAnswerseCase(
+    sut = new EditAnswerUseCase(
       inMemoryAnswerRepository,
-      inMemoryAnswerAttachmentsRepository
+      inMemoryAnswerAttachmentsRepository,
     )
   })
 
@@ -29,7 +29,7 @@ describe('Edit Answer', () => {
       {
         authorId: new UniqueEntityID('author-1'),
       },
-      new UniqueEntityID('answer-1')
+      new UniqueEntityID('answer-1'),
     )
 
     await inMemoryAnswerRepository.create(newAnswer)
@@ -42,7 +42,7 @@ describe('Edit Answer', () => {
       makeAnswerAttachment({
         answerId: newAnswer.id,
         attachmentId: new UniqueEntityID('2'),
-      })
+      }),
     )
 
     await sut.execute({
@@ -56,7 +56,7 @@ describe('Edit Answer', () => {
       content: 'Content test',
     })
     expect(
-      inMemoryAnswerRepository.items[0].attachments.currentItems
+      inMemoryAnswerRepository.items[0].attachments.currentItems,
     ).toHaveLength(2)
     expect(inMemoryAnswerRepository.items[0].attachments.currentItems).toEqual([
       expect.objectContaining({ attachmentId: new UniqueEntityID('1') }),
@@ -69,7 +69,7 @@ describe('Edit Answer', () => {
       {
         authorId: new UniqueEntityID('author-1'),
       },
-      new UniqueEntityID('answer-1')
+      new UniqueEntityID('answer-1'),
     )
 
     await inMemoryAnswerRepository.create(newAnswer)
