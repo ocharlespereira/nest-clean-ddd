@@ -1,20 +1,49 @@
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
-import { Question, QuestionProps } from '@/domain/forum/enterprise/entities/question'
+import {
+  Question,
+  QuestionProps,
+} from '@/domain/forum/enterprise/entities/question'
+import { PrismaQuestionMapper } from '@/infra/database/prisma/mappers/prisma-question-mapper'
+import { PrismaService } from '@/infra/database/prisma/prisma.service'
 import { faker } from '@faker-js/faker'
+import { Injectable } from '@nestjs/common'
 
 /**
- * 
+ *
  * @param override aplicado ao Partial, deixa todos os parametros como opcionais e é possivel sobrescreve-los onde a funçao makeQuestion for chamada
  * Ex.: makeQuestion({ slug: Slug.create('example-question')})
- * 
+ *
  */
-export const makeQuestion = (override: Partial<QuestionProps> = {}, id?: UniqueEntityID) => {
-  const question = Question.create({
-    authorId: new UniqueEntityID(),
-    title: faker.lorem.sentence(),
-    content: faker.lorem.text(),
-    ...override
-  }, id)
+export const makeQuestion = (
+  override: Partial<QuestionProps> = {},
+  id?: UniqueEntityID,
+) => {
+  const question = Question.create(
+    {
+      authorId: new UniqueEntityID(),
+      title: faker.lorem.sentence(),
+      content: faker.lorem.text(),
+      ...override,
+    },
+    id,
+  )
 
   return question
+}
+
+@Injectable()
+export class QuestionFactory {
+  constructor(private prisma: PrismaService) {}
+
+  async makePrismaQuestion(
+    data: Partial<QuestionProps> = {},
+  ): Promise<Question> {
+    const question = makeQuestion(data)
+
+    await this.prisma.question.create({
+      data: PrismaQuestionMapper.toPrisma(question),
+    })
+
+    return question
+  }
 }
