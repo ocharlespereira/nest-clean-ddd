@@ -1,4 +1,3 @@
-import { Slug } from '@/domain/forum/enterprise/entities/values-objects/slug'
 import { AppModule } from '@/infra/app.module'
 import { DataBaseModule } from '@/infra/database/database.module'
 import { INestApplication } from '@nestjs/common'
@@ -24,6 +23,7 @@ describe('Get Question By Slug (E2E)', () => {
 
     studentFactory = moduleRef.get(StudentFactory)
     questionFactory = moduleRef.get(QuestionFactory)
+
     jwt = moduleRef.get(JwtService)
 
     await app.init()
@@ -36,7 +36,7 @@ describe('Get Question By Slug (E2E)', () => {
     await questionFactory.makePrismaQuestion({
       authorId: user.id,
       title: 'Question 01',
-      slug: Slug.create('question-01'),
+      // slug: Slug.create('question-01'),
     })
 
     const response = await request(app.getHttpServer())
