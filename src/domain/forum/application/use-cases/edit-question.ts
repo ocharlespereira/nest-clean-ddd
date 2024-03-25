@@ -2,6 +2,7 @@ import { Either, left, right } from '@/core/either'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { NotAllowedError } from '@/core/errors/errors/not-allowed-error'
 import { QuestionNotFoundError } from '@/core/errors/errors/question-not-found-error'
+import { Injectable } from '@nestjs/common'
 import { QuestionAttachement } from '../../enterprise/entities/question-attachment'
 import { QuestionAttachementList } from '../../enterprise/entities/question-attachment-list'
 import { QuestionAttachmentRepository } from '../repositories/question-attachments-respository'
@@ -20,6 +21,7 @@ type EditQuestionseCaseResponse = Either<
   null
 >
 
+@Injectable()
 export class EditQuestionseCase {
   constructor(
     private questionRepository: QuestionsRepository,

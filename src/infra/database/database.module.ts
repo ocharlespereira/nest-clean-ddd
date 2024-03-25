@@ -1,3 +1,8 @@
+import { AnswerAttachmentRepository } from '@/domain/forum/application/repositories/answer-attachments-respository'
+import { AnswerCommentsRepository } from '@/domain/forum/application/repositories/answer-comments-repository'
+import { AnswersRepository } from '@/domain/forum/application/repositories/answers-respository'
+import { QuestionAttachmentRepository } from '@/domain/forum/application/repositories/question-attachments-respository'
+import { QuestionCommentsRepository } from '@/domain/forum/application/repositories/question-comments-repository'
 import { QuestionsRepository } from '@/domain/forum/application/repositories/question-respository'
 import { StudentsRepository } from '@/domain/forum/application/repositories/students-respository'
 import { Module } from '@nestjs/common'
@@ -21,21 +26,36 @@ import { PrismaStudentsRespository } from './prisma/repositories/prisma-students
       provide: StudentsRepository,
       useClass: PrismaStudentsRespository,
     },
-    PrismaQuestionCommentsRespository,
-    PrismaQuestionAttachementsRespository,
-    PrismaAnswersRespository,
-    PrismaAnswerCommentsRespository,
-    PrismaAnswerAttachmentsRespository,
+    {
+      provide: QuestionCommentsRepository,
+      useClass: PrismaQuestionCommentsRespository,
+    },
+    {
+      provide: QuestionAttachmentRepository,
+      useClass: PrismaQuestionAttachementsRespository,
+    },
+    {
+      provide: AnswersRepository,
+      useClass: PrismaAnswersRespository,
+    },
+    {
+      provide: AnswerCommentsRepository,
+      useClass: PrismaAnswerCommentsRespository,
+    },
+    {
+      provide: AnswerAttachmentRepository,
+      useClass: PrismaAnswerAttachmentsRespository,
+    },
   ],
   exports: [
     PrismaService,
     QuestionsRepository,
     StudentsRepository,
-    PrismaQuestionCommentsRespository,
-    PrismaQuestionAttachementsRespository,
-    PrismaAnswersRespository,
-    PrismaAnswerCommentsRespository,
-    PrismaAnswerAttachmentsRespository,
+    QuestionCommentsRepository,
+    QuestionAttachmentRepository,
+    AnswersRepository,
+    AnswerCommentsRepository,
+    AnswerAttachmentRepository,
   ],
 })
 export class DataBaseModule {}
