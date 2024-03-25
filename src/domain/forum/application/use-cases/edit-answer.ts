@@ -2,30 +2,32 @@ import { Either, left, right } from '@/core/either'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { AnswerNotFoundError } from '@/core/errors/errors/answer-not-found-error'
 import { NotAllowedError } from '@/core/errors/errors/not-allowed-error'
+import { Injectable } from '@nestjs/common'
 import { Answer } from '../../enterprise/entities/answer'
 import { AnswerAttachement } from '../../enterprise/entities/answer-attachment'
 import { AnswerAttachementList } from '../../enterprise/entities/answer-attachment-list'
 import { AnswerAttachmentRepository } from '../repositories/answer-attachments-respository'
 import { AnswersRepository } from '../repositories/answers-respository'
 
-interface EditAnswerseCaseRequest {
+interface EditAnswerUseCaseRequest {
   authorId: string
   answerId: string
   content: string
   attachmentsIds: string[]
 }
 
-type EditAnswerseCaseResponse = Either<
+type EditAnswerUseCaseResponse = Either<
   AnswerNotFoundError | NotAllowedError,
   {
     answer: Answer
   }
 >
 
-export class EditAnswerseCase {
+@Injectable()
+export class EditAnswerUseCase {
   constructor(
     private answerRepository: AnswersRepository,
-    private answerAttachmentRepository: AnswerAttachmentRepository
+    private answerAttachmentRepository: AnswerAttachmentRepository,
   ) {}
 
   async execute({
@@ -33,7 +35,7 @@ export class EditAnswerseCase {
     answerId,
     attachmentsIds,
     content,
-  }: EditAnswerseCaseRequest): Promise<EditAnswerseCaseResponse> {
+  }: EditAnswerUseCaseRequest): Promise<EditAnswerUseCaseResponse> {
     const answer = await this.answerRepository.findById(answerId)
 
     if (!answer) {
@@ -50,7 +52,7 @@ export class EditAnswerseCase {
 
     // cria uma lista passando os anexos q ja tem
     const answerAttachmentList = new AnswerAttachementList(
-      currentAnswerAttachments
+      currentAnswerAttachments,
     )
 
     // cria uma nova lista de anexos apartir dos anexos
