@@ -9,7 +9,7 @@ import { AnswerFactory } from 'test/factories/make-answer'
 import { QuestionFactory } from 'test/factories/make-question'
 import { StudentFactory } from 'test/factories/make-student'
 
-describe('Choose question best answer (E2E)', () => {
+describe('Comment on Answer (E2E)', () => {
   let app: INestApplication
   let prisma: PrismaService
   let studentFactory: StudentFactory
@@ -35,7 +35,7 @@ describe('Choose question best answer (E2E)', () => {
     await app.init()
   })
 
-  it('[PATCH] /answers/:answerId/choose-as-best', async () => {
+  it('[POST] /answers/:answerId/comments', async () => {
     const user = await studentFactory.makePrismaStudent()
 
     const accessToken = jwt.sign({ sub: user.id.toString() })
@@ -45,25 +45,27 @@ describe('Choose question best answer (E2E)', () => {
     })
 
     const answer = await answerFactory.makePrismaAnswer({
-      questionId: question.id,
       authorId: user.id,
+      questionId: question.id,
     })
 
     const answerId = answer.id.toString()
 
     const response = await request(app.getHttpServer())
-      .patch(`/answers/${answerId}/choose-as-best`)
+      .post(`/answers/${answerId}/comments`)
       .set('Authorization', `Bearer ${accessToken}`)
-      .send()
+      .send({
+        content: 'New Comments',
+      })
 
-    expect(response.statusCode).toBe(204)
+    expect(response.statusCode).toBe(201)
 
-    const questionOnDatabase = await prisma.question.findUnique({
+    const commentOnDatabase = await prisma.comment.findFirst({
       where: {
-        id: question.id.toString(),
+        content: 'New Comments',
       },
     })
 
-    expect(questionOnDatabase?.bestAnswerId).toEqual(answerId)
+    expect(commentOnDatabase).toBeTruthy()
   })
 })

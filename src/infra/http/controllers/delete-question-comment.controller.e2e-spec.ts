@@ -7,20 +7,27 @@ import { Test } from '@nestjs/testing'
 import request from 'supertest'
 import { AnswerFactory } from 'test/factories/make-answer'
 import { QuestionFactory } from 'test/factories/make-question'
+import { QuestionCommentFactory } from 'test/factories/make-question-comment'
 import { StudentFactory } from 'test/factories/make-student'
 
-describe('Choose question best answer (E2E)', () => {
+describe('Delete question Comment (E2E)', () => {
   let app: INestApplication
   let prisma: PrismaService
   let studentFactory: StudentFactory
   let questionFactory: QuestionFactory
   let answerFactory: AnswerFactory
+  let questionCommentFactory: QuestionCommentFactory
   let jwt: JwtService
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [AppModule, DataBaseModule],
-      providers: [StudentFactory, QuestionFactory, AnswerFactory],
+      providers: [
+        StudentFactory,
+        QuestionFactory,
+        AnswerFactory,
+        QuestionCommentFactory,
+      ],
     }).compile()
 
     app = moduleRef.createNestApplication()
@@ -29,13 +36,14 @@ describe('Choose question best answer (E2E)', () => {
     studentFactory = moduleRef.get(StudentFactory)
     questionFactory = moduleRef.get(QuestionFactory)
     answerFactory = moduleRef.get(AnswerFactory)
+    questionCommentFactory = moduleRef.get(QuestionCommentFactory)
 
     jwt = moduleRef.get(JwtService)
 
     await app.init()
   })
 
-  it('[PATCH] /answers/:answerId/choose-as-best', async () => {
+  it('[DELETE] /questions/comments/:id', async () => {
     const user = await studentFactory.makePrismaStudent()
 
     const accessToken = jwt.sign({ sub: user.id.toString() })
@@ -44,26 +52,27 @@ describe('Choose question best answer (E2E)', () => {
       authorId: user.id,
     })
 
-    const answer = await answerFactory.makePrismaAnswer({
-      questionId: question.id,
-      authorId: user.id,
-    })
+    const questionComment =
+      await questionCommentFactory.makePrismaQuestionComment({
+        authorId: user.id,
+        questionId: question.id,
+      })
 
-    const answerId = answer.id.toString()
+    const questionCommentId = questionComment.id.toString()
 
     const response = await request(app.getHttpServer())
-      .patch(`/answers/${answerId}/choose-as-best`)
+      .delete(`/questions/comments/${questionCommentId}`)
       .set('Authorization', `Bearer ${accessToken}`)
       .send()
 
     expect(response.statusCode).toBe(204)
 
-    const questionOnDatabase = await prisma.question.findUnique({
+    const commentOnDataBase = await prisma.question.findUnique({
       where: {
-        id: question.id.toString(),
+        id: questionCommentId,
       },
     })
 
-    expect(questionOnDatabase?.bestAnswerId).toEqual(answerId)
+    expect(commentOnDataBase).toBeNull()
   })
 })
