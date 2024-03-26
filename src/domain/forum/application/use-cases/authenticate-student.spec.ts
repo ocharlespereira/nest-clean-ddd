@@ -28,7 +28,6 @@ describe('Register Authenticate', () => {
       email: 'johndoe@example.com',
       password: await fakeHasher.hash('123456'),
     })
-    console.log('student :', student)
 
     inMemoryStudentRepository.items.push(student)
 
