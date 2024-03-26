@@ -51,7 +51,7 @@ export class PrismaAnswerCommentsRespository
   async delete(answerComment: AnswerComment): Promise<void> {
     await this.prisma.comment.delete({
       where: {
-        id: answerComment.answerId.toString(),
+        id: answerComment.id.toString(),
       },
     })
   }

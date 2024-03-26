@@ -29,7 +29,7 @@ export class PrismaQuestionCommentMapper {
       questionId: questionComment.questionId.toString(),
       content: questionComment.content,
       createdAt: questionComment.createdAt,
-      updatedAt: questionComment.updatedAt,
+      updatedAt: questionComment.createdAt,
     }
   }
 }
