@@ -26,7 +26,7 @@ export const makeQuestionComment = (
 }
 
 @Injectable()
-export class QuestionFactory {
+export class QuestionCommentFactory {
   constructor(private prisma: PrismaService) {}
 
   async makePrismaQuestionComment(
