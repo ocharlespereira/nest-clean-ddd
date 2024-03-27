@@ -15,12 +15,12 @@ describe('Edit Question', () => {
     inMemoryQuestionAttachmentsRepository =
       new InMemoryQuestionAttachmentsRepository()
     inMemoryQuestionRepository = new InMemoryQuestionRepository(
-      inMemoryQuestionAttachmentsRepository
+      inMemoryQuestionAttachmentsRepository,
     )
 
     sut = new EditQuestionseCase(
       inMemoryQuestionRepository,
-      inMemoryQuestionAttachmentsRepository
+      inMemoryQuestionAttachmentsRepository,
     )
   })
 
@@ -29,7 +29,7 @@ describe('Edit Question', () => {
       {
         authorId: new UniqueEntityID('author-1'),
       },
-      new UniqueEntityID('question-1')
+      new UniqueEntityID('question-1'),
     )
 
     await inMemoryQuestionRepository.create(newQuestion)
@@ -42,7 +42,7 @@ describe('Edit Question', () => {
       makeQuestionAttachment({
         questionId: newQuestion.id,
         attachmentId: new UniqueEntityID('2'),
-      })
+      }),
     )
 
     await sut.execute({
@@ -58,10 +58,10 @@ describe('Edit Question', () => {
       content: 'Content test',
     })
     expect(
-      inMemoryQuestionRepository.items[0].attachments.currentItems
+      inMemoryQuestionRepository.items[0].attachments.currentItems,
     ).toHaveLength(2)
     expect(
-      inMemoryQuestionRepository.items[0].attachments.currentItems
+      inMemoryQuestionRepository.items[0].attachments.currentItems,
     ).toEqual([
       expect.objectContaining({ attachmentId: new UniqueEntityID('1') }),
       expect.objectContaining({ attachmentId: new UniqueEntityID('3') }),
@@ -73,7 +73,7 @@ describe('Edit Question', () => {
       {
         authorId: new UniqueEntityID('author-1'),
       },
-      new UniqueEntityID('question-1')
+      new UniqueEntityID('question-1'),
     )
 
     await inMemoryQuestionRepository.create(newQuestion)
@@ -88,5 +88,48 @@ describe('Edit Question', () => {
 
     expect(result.isLeft()).toBe(true)
     expect(result.value).toBeInstanceOf(NotAllowedError)
+  })
+
+  it('should sync new add removed attachments when editing a question', async () => {
+    const newQuestion = makeQuestion(
+      {
+        authorId: new UniqueEntityID('author-1'),
+      },
+      new UniqueEntityID('question-1'),
+    )
+
+    await inMemoryQuestionRepository.create(newQuestion)
+
+    inMemoryQuestionAttachmentsRepository.items.push(
+      makeQuestionAttachment({
+        questionId: newQuestion.id,
+        attachmentId: new UniqueEntityID('1'),
+      }),
+      makeQuestionAttachment({
+        questionId: newQuestion.id,
+        attachmentId: new UniqueEntityID('2'),
+      }),
+    )
+
+    const result = await sut.execute({
+      questionId: newQuestion.id.toString(),
+      authorId: 'author-1',
+      title: 'Answer test',
+      content: 'Content test',
+      attachmentsIds: ['1', '3'],
+    })
+
+    expect(result.isRight()).toBe(true)
+    expect(inMemoryQuestionAttachmentsRepository.items).toHaveLength(2)
+    expect(inMemoryQuestionAttachmentsRepository.items).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          attachmentId: new UniqueEntityID('1'),
+        }),
+        expect.objectContaining({
+          attachmentId: new UniqueEntityID('3'),
+        }),
+      ]),
+    )
   })
 })
