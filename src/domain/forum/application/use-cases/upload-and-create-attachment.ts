@@ -17,7 +17,7 @@ type UploadAndAttachmentUseCaseResponse = Either<
 >
 
 @Injectable()
-export class UploadAndAttachmentUseCase {
+export class UploadAndCreateAttachmentUseCase {
   constructor(
     private attachmentRepository: AttachmentsRepository,
     private uploader: Uploader,
