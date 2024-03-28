@@ -9,7 +9,7 @@ export class InMemoryAnswerRepository implements AnswersRepository {
 
   // dependecy inversion
   constructor(
-    private answerAttachmentsRepository: AnswerAttachmentRepository
+    private answerAttachmentsRepository: AnswerAttachmentRepository,
   ) {}
 
   async findById(id: string) {
@@ -33,6 +33,10 @@ export class InMemoryAnswerRepository implements AnswersRepository {
   async create(answer: Answer) {
     this.items.push(answer)
 
+    await this.answerAttachmentsRepository.createMany(
+      answer.attachments.getItems(),
+    )
+
     DomainEvents.dispatchEventsForAggregate(answer.id)
   }
 
@@ -40,6 +44,14 @@ export class InMemoryAnswerRepository implements AnswersRepository {
     const itemIndex = this.items.findIndex((item) => item.id === answer.id)
 
     this.items[itemIndex] = answer
+
+    await this.answerAttachmentsRepository.createMany(
+      answer.attachments.getNewItems(),
+    )
+
+    await this.answerAttachmentsRepository.deleteMany(
+      answer.attachments.getRemovedItems(),
+    )
 
     DomainEvents.dispatchEventsForAggregate(answer.id)
   }
