@@ -1,25 +1,31 @@
 import { makeQuestion } from 'test/factories/make-question'
+import { InMemoryQuestionAttachmentsRepository } from 'test/repositories/in-memory-question-attachments-repository'
 import { InMemoryQuestionRepository } from 'test/repositories/in-memory-questions-respository'
 import { FetchRecentQuestionsUseCase } from './fetch-recent-questions'
 
 let inMemoryQuestionRepository: InMemoryQuestionRepository
+let inMemoryQuestionAttachmentsRepository: InMemoryQuestionAttachmentsRepository
 let sut: FetchRecentQuestionsUseCase
 
 describe('Fetch Recent Questions', () => {
   beforeEach(() => {
-    inMemoryQuestionRepository = new InMemoryQuestionRepository()
+    inMemoryQuestionAttachmentsRepository =
+      new InMemoryQuestionAttachmentsRepository()
+    inMemoryQuestionRepository = new InMemoryQuestionRepository(
+      inMemoryQuestionAttachmentsRepository,
+    )
     sut = new FetchRecentQuestionsUseCase(inMemoryQuestionRepository)
   })
 
   it('should be able to fetch recent questions', async () => {
     await inMemoryQuestionRepository.create(
-      makeQuestion({ createdAt: new Date(2022, 0, 10) })
+      makeQuestion({ createdAt: new Date(2022, 0, 10) }),
     )
     await inMemoryQuestionRepository.create(
-      makeQuestion({ createdAt: new Date(2022, 0, 5) })
+      makeQuestion({ createdAt: new Date(2022, 0, 5) }),
     )
     await inMemoryQuestionRepository.create(
-      makeQuestion({ createdAt: new Date(2022, 0, 16) })
+      makeQuestion({ createdAt: new Date(2022, 0, 16) }),
     )
 
     const result = await sut.execute({
