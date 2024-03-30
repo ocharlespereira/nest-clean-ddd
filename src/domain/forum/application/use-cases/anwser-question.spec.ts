@@ -20,8 +20,8 @@ describe('Create Answer', () => {
 
   it('should be able to create an answer', async () => {
     const result = await sut.execute({
-      authorId: '1',
       questionId: '1',
+      authorId: '1',
       content: 'Answer content',
       attachmentsIds: ['1', '2'],
     })
@@ -39,8 +39,8 @@ describe('Create Answer', () => {
 
   it('should persist attachments when creating a new answer', async () => {
     const result = await sut.execute({
-      authorId: '1',
       questionId: '1',
+      authorId: '1',
       content: 'Answer content',
       attachmentsIds: ['1', '2'],
     })
