@@ -10,7 +10,7 @@ import { PrismaService } from '../prisma.service'
 export class PrismaAnswersRespository implements AnswersRepository {
   constructor(
     private prisma: PrismaService,
-    private answerAttachments: AnswerAttachmentRepository,
+    private answerAttachmentsRepository: AnswerAttachmentRepository,
   ) {}
 
   async findById(id: string): Promise<Answer | null> {
@@ -49,7 +49,9 @@ export class PrismaAnswersRespository implements AnswersRepository {
       data,
     })
 
-    await this.answerAttachments.createMany(answer.attachments.getItems())
+    await this.answerAttachmentsRepository.createMany(
+      answer.attachments.getItems(),
+    )
   }
 
   async save(answer: Answer): Promise<void> {
@@ -62,8 +64,12 @@ export class PrismaAnswersRespository implements AnswersRepository {
         },
         data,
       }),
-      this.answerAttachments.createMany(answer.attachments.getNewItems()),
-      this.answerAttachments.deleteMany(answer.attachments.getRemovedItems()),
+      this.answerAttachmentsRepository.createMany(
+        answer.attachments.getNewItems(),
+      ),
+      this.answerAttachmentsRepository.deleteMany(
+        answer.attachments.getRemovedItems(),
+      ),
     ])
   }
 

@@ -34,7 +34,6 @@ export class AnwserQuestionUseCase {
       authorId: new UniqueEntityID(authorId),
       questionId: new UniqueEntityID(questionId),
     })
-    console.log('answer :', answer.id)
 
     const answerAttachments = attachmentsIds.map((attachmentsIds) => {
       return AnswerAttachement.create({
