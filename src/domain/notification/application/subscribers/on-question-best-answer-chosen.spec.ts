@@ -2,9 +2,11 @@ import { makeAnswer } from 'test/factories/make-answer'
 import { makeQuestion } from 'test/factories/make-question'
 import { InMemoryAnswerAttachmentsRepository } from 'test/repositories/in-memory-answer-attachments-repository'
 import { InMemoryAnswerRepository } from 'test/repositories/in-memory-answers-respository'
+import { InMemoryAttachmentRepository } from 'test/repositories/in-memory-attachments-respository'
 import { InMemoryNotificationsRepository } from 'test/repositories/in-memory-notifications-repository'
 import { InMemoryQuestionAttachmentsRepository } from 'test/repositories/in-memory-question-attachments-repository'
 import { InMemoryQuestionRepository } from 'test/repositories/in-memory-questions-respository'
+import { InMemoryStudentRepository } from 'test/repositories/in-memory-student-respository'
 import { waitFor } from 'test/utils/wait-for'
 import { SpyInstance, vi } from 'vitest'
 import {
@@ -17,6 +19,8 @@ import { OnQuestionBestaAnswerChosen } from './on-question-best-answer-chosen'
 let inMemoryQuestionRepository: InMemoryQuestionRepository
 let inMemoryQuestionAttachmentsRepository: InMemoryQuestionAttachmentsRepository
 let inMemoryAnswerAttachmentsRepository: InMemoryAnswerAttachmentsRepository
+let inMemoryAttachmentRepository: InMemoryAttachmentRepository
+let inMemoryStudentRepository: InMemoryStudentRepository
 let inMemoryAnswersRepository: InMemoryAnswerRepository
 let inMemoryNotificationsRepository: InMemoryNotificationsRepository
 let sendNotificationUseCase: SendNotificationUseCase
@@ -30,24 +34,28 @@ describe('On Question Best Answer Chosen', () => {
   beforeEach(() => {
     inMemoryQuestionAttachmentsRepository =
       new InMemoryQuestionAttachmentsRepository()
+    inMemoryAttachmentRepository = new InMemoryAttachmentRepository()
+    inMemoryStudentRepository = new InMemoryStudentRepository()
     inMemoryQuestionRepository = new InMemoryQuestionRepository(
-      inMemoryQuestionAttachmentsRepository
+      inMemoryQuestionAttachmentsRepository,
+      inMemoryAttachmentRepository,
+      inMemoryStudentRepository,
     )
     inMemoryAnswerAttachmentsRepository =
       new InMemoryAnswerAttachmentsRepository()
     inMemoryAnswersRepository = new InMemoryAnswerRepository(
-      inMemoryAnswerAttachmentsRepository
+      inMemoryAnswerAttachmentsRepository,
     )
     inMemoryNotificationsRepository = new InMemoryNotificationsRepository()
     sendNotificationUseCase = new SendNotificationUseCase(
-      inMemoryNotificationsRepository
+      inMemoryNotificationsRepository,
     )
 
     sendNotificationExecuteSpy = vi.spyOn(sendNotificationUseCase, 'execute')
 
     new OnQuestionBestaAnswerChosen(
       inMemoryAnswersRepository,
-      sendNotificationUseCase
+      sendNotificationUseCase,
     )
   })
 
