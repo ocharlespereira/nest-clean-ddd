@@ -34,7 +34,7 @@ export class InMemoryQuestionCommentsRepository
     { page }: PaginationParams,
   ) {
     const questionComment = this.items
-      .filter((item) => questionId)
+      .filter((item) => item.questionId.toString() === questionId)
       .slice((page - 1) * 20, page * 20)
       .map((comment) => {
         const author = this.inMemoryStudentRepository.items.find((student) => {
