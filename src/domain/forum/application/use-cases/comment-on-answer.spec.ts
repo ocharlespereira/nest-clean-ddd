@@ -2,10 +2,12 @@ import { makeAnswer } from 'test/factories/make-answer'
 import { InMemoryAnswerAttachmentsRepository } from 'test/repositories/in-memory-answer-attachments-repository'
 import { InMemoryAnswerCommentsRepository } from 'test/repositories/in-memory-answer-comments-repository'
 import { InMemoryAnswerRepository } from 'test/repositories/in-memory-answers-respository'
+import { InMemoryStudentRepository } from 'test/repositories/in-memory-student-respository'
 import { CommentOnAnswerUseCase } from './comment-on-answer'
 
 let inMemoryAnswerAttachmentsRepository: InMemoryAnswerAttachmentsRepository
 let inMemoryAnswerRepository: InMemoryAnswerRepository
+let inMemoryStudentRepository: InMemoryStudentRepository
 let inMemoryAnswerCommentsRepository: InMemoryAnswerCommentsRepository
 let sut: CommentOnAnswerUseCase
 
@@ -13,14 +15,17 @@ describe('Comment on Answer', () => {
   beforeEach(() => {
     inMemoryAnswerAttachmentsRepository =
       new InMemoryAnswerAttachmentsRepository()
-    inMemoryAnswerCommentsRepository = new InMemoryAnswerCommentsRepository()
+    inMemoryStudentRepository = new InMemoryStudentRepository()
+    inMemoryAnswerCommentsRepository = new InMemoryAnswerCommentsRepository(
+      inMemoryStudentRepository,
+    )
     inMemoryAnswerRepository = new InMemoryAnswerRepository(
-      inMemoryAnswerAttachmentsRepository
+      inMemoryAnswerAttachmentsRepository,
     )
 
     sut = new CommentOnAnswerUseCase(
       inMemoryAnswerRepository,
-      inMemoryAnswerCommentsRepository
+      inMemoryAnswerCommentsRepository,
     )
   })
 
@@ -36,7 +41,7 @@ describe('Comment on Answer', () => {
     })
 
     expect(inMemoryAnswerCommentsRepository.items[0].content).toEqual(
-      'Comment test'
+      'Comment test',
     )
   })
 })

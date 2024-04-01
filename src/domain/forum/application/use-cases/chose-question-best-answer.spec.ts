@@ -4,12 +4,16 @@ import { makeAnswer } from 'test/factories/make-answer'
 import { makeQuestion } from 'test/factories/make-question'
 import { InMemoryAnswerAttachmentsRepository } from 'test/repositories/in-memory-answer-attachments-repository'
 import { InMemoryAnswerRepository } from 'test/repositories/in-memory-answers-respository'
+import { InMemoryAttachmentRepository } from 'test/repositories/in-memory-attachments-respository'
 import { InMemoryQuestionAttachmentsRepository } from 'test/repositories/in-memory-question-attachments-repository'
 import { InMemoryQuestionRepository } from 'test/repositories/in-memory-questions-respository'
+import { InMemoryStudentRepository } from 'test/repositories/in-memory-student-respository'
 import { ChooseQuestionBestAnswerUseCase } from './chose-question-best-answer'
 
 let inMemoryAnswerAttachmentsRepository: InMemoryAnswerAttachmentsRepository
 let inMemoryQuestionAttachmentsRepository: InMemoryQuestionAttachmentsRepository
+let inMemoryAttachmentRepository: InMemoryAttachmentRepository
+let inMemoryStudentRepository: InMemoryStudentRepository
 let inMemoryQuestionRepository: InMemoryQuestionRepository
 let inMemoryAnswerRepository: InMemoryAnswerRepository
 let sut: ChooseQuestionBestAnswerUseCase
@@ -20,16 +24,20 @@ describe('Choose Question Best Answer', () => {
       new InMemoryAnswerAttachmentsRepository()
     inMemoryQuestionAttachmentsRepository =
       new InMemoryQuestionAttachmentsRepository()
+    inMemoryAttachmentRepository = new InMemoryAttachmentRepository()
+    inMemoryStudentRepository = new InMemoryStudentRepository()
     inMemoryQuestionRepository = new InMemoryQuestionRepository(
-      inMemoryQuestionAttachmentsRepository
+      inMemoryQuestionAttachmentsRepository,
+      inMemoryAttachmentRepository,
+      inMemoryStudentRepository,
     )
     inMemoryAnswerRepository = new InMemoryAnswerRepository(
-      inMemoryAnswerAttachmentsRepository
+      inMemoryAnswerAttachmentsRepository,
     )
 
     sut = new ChooseQuestionBestAnswerUseCase(
       inMemoryQuestionRepository,
-      inMemoryAnswerRepository
+      inMemoryAnswerRepository,
     )
   })
 
