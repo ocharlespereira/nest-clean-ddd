@@ -7,6 +7,7 @@ export class QuestionDetailsPresenter {
       questionId: questionDetails.questionId.toString(),
       authorId: questionDetails.authorId,
       author: questionDetails.author,
+      title: questionDetails.title,
       content: questionDetails.content,
       slug: questionDetails.slug.value,
       bestAnswerId: questionDetails.bestAnswerId?.toString,
