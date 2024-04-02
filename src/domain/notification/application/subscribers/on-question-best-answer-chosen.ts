@@ -2,12 +2,14 @@ import { DomainEvents } from '@/core/events/domain-events'
 import { EventHandler } from '@/core/events/domain-handler'
 import { AnswersRepository } from '@/domain/forum/application/repositories/answers-respository'
 import { QuestionBestAnswerChosenEvent } from '@/domain/forum/enterprise/events/question-best-answer-chosen-event'
+import { Injectable } from '@nestjs/common'
 import { SendNotificationUseCase } from '../use-case/send-notification'
 
+@Injectable()
 export class OnQuestionBestaAnswerChosen implements EventHandler {
   constructor(
     private answerRepository: AnswersRepository,
-    private sendNotification: SendNotificationUseCase
+    private sendNotification: SendNotificationUseCase,
   ) {
     this.setupSubscriptions()
   }
@@ -16,7 +18,7 @@ export class OnQuestionBestaAnswerChosen implements EventHandler {
     DomainEvents.register(
       this.sendQuestionBestAnswerNotification.bind(this), // quando a funçao for chamada o this tem q significar a mesma referencia da classe OnQuestionBestaAnswerChosen
 
-      QuestionBestAnswerChosenEvent.name
+      QuestionBestAnswerChosenEvent.name,
     )
   }
 

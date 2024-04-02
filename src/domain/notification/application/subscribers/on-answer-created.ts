@@ -2,12 +2,14 @@ import { DomainEvents } from '@/core/events/domain-events'
 import { EventHandler } from '@/core/events/domain-handler'
 import { QuestionsRepository } from '@/domain/forum/application/repositories/question-respository'
 import { AnswerCreatedEvent } from '@/domain/forum/enterprise/events/answer-created-event'
+import { Injectable } from '@nestjs/common'
 import { SendNotificationUseCase } from '../use-case/send-notification'
 
+@Injectable()
 export class OnAnswerCreated implements EventHandler {
   constructor(
     private questionRepository: QuestionsRepository,
-    private sendNotification: SendNotificationUseCase
+    private sendNotification: SendNotificationUseCase,
   ) {
     this.setupSubscriptions()
   }
@@ -15,13 +17,13 @@ export class OnAnswerCreated implements EventHandler {
   setupSubscriptions(): void {
     DomainEvents.register(
       this.sendNewAnswerNotification.bind(this), // quando a funçao for chamada o this tem q significar a mesma referencia da classe OnAnswerCreated
-      AnswerCreatedEvent.name
+      AnswerCreatedEvent.name,
     )
   }
 
   private async sendNewAnswerNotification({ answer }: AnswerCreatedEvent) {
     const question = await this.questionRepository.findById(
-      answer.questionId.toString()
+      answer.questionId.toString(),
     )
 
     if (question) {
