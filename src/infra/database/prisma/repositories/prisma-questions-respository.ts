@@ -4,6 +4,7 @@ import { QuestionAttachmentRepository } from '@/domain/forum/application/reposit
 import { QuestionsRepository } from '@/domain/forum/application/repositories/question-respository'
 import { Question } from '@/domain/forum/enterprise/entities/question'
 import { QuestionDetails } from '@/domain/forum/enterprise/entities/values-objects/question-details'
+import { CacheRepository } from '@/infra/cache/cache-repository'
 import { Injectable } from '@nestjs/common'
 import { PrismanQuestionDetailsMapper } from '../mappers/prisma-question-details-mapper'
 import { PrismaQuestionMapper } from '../mappers/prisma-question-mapper'
@@ -13,6 +14,7 @@ import { PrismaService } from '../prisma.service'
 export class PrismaQuestionsRespository implements QuestionsRepository {
   constructor(
     private prisma: PrismaService,
+    private cacheRepository: CacheRepository,
     private questionAttachments: QuestionAttachmentRepository,
   ) {}
 
@@ -41,6 +43,15 @@ export class PrismaQuestionsRespository implements QuestionsRepository {
   }
 
   async findDetailsBySlug(slug: string): Promise<QuestionDetails | null> {
+    const CACHE_KEY = `question:${slug}:details`
+    const cacheHit = await this.cacheRepository.get(CACHE_KEY)
+
+    if (cacheHit) {
+      const cacheData = JSON.parse(cacheHit)
+
+      return cacheData
+    }
+
     const question = await this.prisma.question.findUnique({
       where: { slug },
       include: {
@@ -53,7 +64,12 @@ export class PrismaQuestionsRespository implements QuestionsRepository {
       return null
     }
 
-    return PrismanQuestionDetailsMapper.toDomain(question)
+    const questionDetails = PrismanQuestionDetailsMapper.toDomain(question)
+
+    // cache
+    await this.cacheRepository.set(CACHE_KEY, JSON.stringify(questionDetails))
+
+    return questionDetails
   }
 
   async findManyRecent({ page }: PaginationParams): Promise<Question[]> {
@@ -82,6 +98,8 @@ export class PrismaQuestionsRespository implements QuestionsRepository {
   async save(question: Question): Promise<void> {
     const data = PrismaQuestionMapper.toPrisma(question)
 
+    const CACHE_KEY = `question:${data.slug}:details`
+
     await Promise.all([
       this.prisma.question.update({
         where: {
@@ -93,6 +111,7 @@ export class PrismaQuestionsRespository implements QuestionsRepository {
       this.questionAttachments.deleteMany(
         question.attachments.getRemovedItems(),
       ),
+      this.cacheRepository.delete(CACHE_KEY),
     ])
 
     DomainEvents.dispatchEventsForAggregate(question.id)
