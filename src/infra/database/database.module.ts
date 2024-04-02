@@ -6,12 +6,14 @@ import { QuestionAttachmentRepository } from '@/domain/forum/application/reposit
 import { QuestionCommentsRepository } from '@/domain/forum/application/repositories/question-comments-repository'
 import { QuestionsRepository } from '@/domain/forum/application/repositories/question-respository'
 import { StudentsRepository } from '@/domain/forum/application/repositories/students-respository'
+import { NotificationsRepository } from '@/domain/notification/application/repositories/notifications-repository'
 import { Module } from '@nestjs/common'
 import { PrismaService } from './prisma/prisma.service'
 import { PrismaAnswerAttachmentsRespository } from './prisma/repositories/prisma-answer-attachments-respository'
 import { PrismaAnswerCommentsRespository } from './prisma/repositories/prisma-answer-comments-respository'
 import { PrismaAnswersRespository } from './prisma/repositories/prisma-answers-respository'
 import { PrismaAttachmentsRespository } from './prisma/repositories/prisma-attachments-respository'
+import { PrismaNotificationsRespository } from './prisma/repositories/prisma-notifications-repository'
 import { PrismaQuestionAttachementsRespository } from './prisma/repositories/prisma-question-attachments-respository'
 import { PrismaQuestionCommentsRespository } from './prisma/repositories/prisma-question-comments-respository'
 import { PrismaQuestionsRespository } from './prisma/repositories/prisma-questions-respository'
@@ -52,6 +54,10 @@ import { PrismaStudentsRespository } from './prisma/repositories/prisma-students
       provide: AttachmentsRepository,
       useClass: PrismaAttachmentsRespository,
     },
+    {
+      provide: NotificationsRepository,
+      useClass: PrismaNotificationsRespository,
+    },
   ],
   exports: [
     PrismaService,
@@ -63,6 +69,7 @@ import { PrismaStudentsRespository } from './prisma/repositories/prisma-students
     AnswerCommentsRepository,
     AnswerAttachmentRepository,
     AttachmentsRepository,
+    NotificationsRepository,
   ],
 })
 export class DataBaseModule {}
